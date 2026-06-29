@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI Infrastructure Options Under ₹50 Lakhs — Cleaned v5</title>
+<style>
+  :root{--bg:#f7f8fb;--panel:#fff;--ink:#172033;--muted:#5b657a;--line:#dfe4ee;--blue:#2457ff;--green:#0f766e;--amber:#b76800;--red:#b42318;--soft:#f2f5fb;--chip:#eef3ff}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;line-height:1.48} header{background:linear-gradient(135deg,#111827,#17336d 62%,#2457ff);color:white;padding:42px 54px} header h1{font-size:34px;line-height:1.14;margin:0 0 12px;font-weight:850;letter-spacing:-.025em} header p{font-size:16.5px;max-width:1120px;margin:6px 0;color:#e8eefc} main{max-width:1280px;margin:auto;padding:28px 28px 64px} section{background:var(--panel);border:1px solid var(--line);border-radius:18px;margin:20px 0;padding:26px 28px;box-shadow:0 4px 16px rgba(19,33,68,.04)} h2{font-size:25px;margin:0 0 14px;letter-spacing:-.015em} h3{font-size:19px;margin:24px 0 10px} h4{font-size:16px;margin:18px 0 8px} p{margin:9px 0}.muted{color:var(--muted)}.small{font-size:12.5px}.toc a{display:inline-block;margin:4px 10px 4px 0;color:#1746d6;text-decoration:none;font-weight:650}.grid{display:grid;gap:16px}.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}.card{border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px 18px}.card h3,.card h4{margin-top:0}.rec{border:2px solid #8bb6ff;background:#f8fbff}.kpi{font-size:28px;font-weight:850;letter-spacing:-.02em;color:#11205a}.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:750}.pill{display:inline-block;background:var(--chip);border:1px solid #dbe5ff;color:#1b3bb3;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;margin:3px 4px 3px 0} table{width:100%;border-collapse:collapse;margin:12px 0 18px;font-size:13.5px} th,td{border:1px solid var(--line);padding:9px 10px;text-align:left;vertical-align:top} th{background:var(--soft);font-weight:800;color:#25304a} tbody tr:nth-child(even){background:#fbfcff}.note{border-left:4px solid var(--blue);background:#f4f7ff;padding:12px 14px;border-radius:10px;margin:12px 0}.warn{border-left:4px solid var(--amber);background:#fff7ed;padding:12px 14px;border-radius:10px;margin:12px 0}.good{color:var(--green);font-weight:800}.ok{color:var(--amber);font-weight:800}.bad{color:var(--red);font-weight:800}.code{background:#0f172a;color:#e5e7eb;border-radius:12px;padding:14px 16px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;font-size:13px;white-space:pre-wrap}.src li{margin:7px 0;word-break:break-word} footer{color:var(--muted);text-align:center;padding:20px;font-size:12px}@media(max-width:900px){header{padding:30px 24px}main{padding:18px}.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}table{font-size:12px}th,td{padding:7px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>AI Infrastructure Survey</h1>
+  <p>Procurement-ready survey for LLM serving, LoRA/QLoRA, full fine-tuning, and small-to-mid deep-learning training. The recommendation is intentionally hard-cutover: choose a CUDA multi-GPU server as the primary org platform; treat Mac Studio, DGX Spark, AMD Radeon and Intel/AMD accelerator routes as specialist or proof-of-concept options.</p>
+  <p class="small">Prepared for internal org discussion • Budget target: ₹50,00,000 • Date: 29 June 2026 • Costs are indicative planning ranges; validate with written vendor quotes, GST, warranty, delivery, chassis, power, cooling and support.</p>
+</header>
+<main>
+
+<section id="exec">
+  <h2>Executive summary</h2>
+  <div class="grid grid-3">
+    <div class="card rec"><div class="label">Primary recommendation if quote is real</div><div class="kpi">4×72GB</div><p><b>RTX PRO 5000 Blackwell 72GB</b>. Best ₹50L-class target: 288GB ECC VRAM, 300W/card, CUDA ecosystem, clean headroom for 50B FP16/BF16 serving, workable 70B serving, and the strongest full fine-tuning flexibility in budget.</p></div>
+    <div class="card"><div class="label">Safe CUDA fallback</div><div class="kpi">4×48GB</div><p><b>RTX 6000 Ada or L40S</b>. Proven 192GB route. Good for 50B FP16/BF16 inference, 7B/14B tuning, RAG, and smaller DL training. L40S needs a validated passive-cooling server; RTX 6000 Ada is easier as a workstation card.</p></div>
+    <div class="card"><div class="label">What ₹50L cannot buy cleanly</div><div class="kpi">No DGX</div><p>₹50L is not a DGX-class training budget. It can buy a strong single-node lab/server, not enterprise cluster training. Mac Studio and DGX Spark are developer appliances, not the shared CUDA serving/training platform.</p></div>
+  </div>
+  <div class="note"><b>Management-level recommendation:</b> first request formal quotes for <b>4× RTX PRO 5000 Blackwell 72GB</b>, with a 3-GPU version as a cost-controlled alternate. If pricing, supply, warranty or chassis validation is weak, fall back to <b>4× RTX 6000 Ada 48GB</b>; choose <b>4× L40S 48GB</b> only as a validated server build. Use AMD/Intel only with benchmarked POC success criteria and vendor support commitment.</div>
+</section>
+
+<section class="toc">
+  <h2>Contents</h2>
+  <a href="#memory">1. Model memory basics</a>
+  <a href="#methods">2. Fine-tuning, LoRA, quantization and batching</a>
+  <a href="#hardware-ranked">3. Sorted hardware recommendation</a>
+  <a href="#cost-ranked">4. Costed options</a>
+  <a href="#serving-ranked">5. Sorted LLM serving capacity</a>
+  <a href="#training-ranked">6. Sorted fine-tuning/training feasibility</a>
+  <a href="#software">7. Software stack</a>
+  <a href="#decision">8. Final decision matrix</a>
+  <a href="#sources">9. Sources</a>
+</section>
+
+<section id="memory">
+  <h2>1. Model memory basics</h2>
+  <p>For LLM infra, accelerator memory is the first filter. Compute matters only after the model weights, KV cache, activations, batch and runtime buffers fit. For inference, “unquantized” normally means FP16/BF16 weights, not FP32. FP32 50B inference needs roughly 200GB for weights alone and is not a sensible ₹50L target.</p>
+  <table>
+    <thead><tr><th>Model size</th><th>FP32 weights</th><th>FP16/BF16 weights</th><th>INT8</th><th>INT4/GGUF/NF4</th><th>Practical infra note</th></tr></thead>
+    <tbody>
+      <tr><td>3B</td><td>~12GB</td><td>~6GB</td><td>~3GB</td><td>~1.5–2GB</td><td>Easy on one GPU or Mac unified memory.</td></tr>
+      <tr><td>7B/8B</td><td>~28–32GB</td><td>~14–16GB</td><td>~7–8GB</td><td>~4–5GB</td><td>One 24GB GPU is enough for inference and QLoRA; full training is a much larger memory problem.</td></tr>
+      <tr><td>13B/14B</td><td>~52–56GB</td><td>~26–28GB</td><td>~13–14GB</td><td>~7–9GB</td><td>Comfortable on one 48GB+ GPU; tight on 24GB for FP16.</td></tr>
+      <tr><td>30B/34B</td><td>~120–136GB</td><td>~60–68GB</td><td>~30–34GB</td><td>~16–22GB</td><td>Needs 1×72/96GB or 2×48GB for clean FP16/BF16 serving.</td></tr>
+      <tr><td>50B</td><td>~200GB</td><td>~100GB</td><td>~50GB</td><td>~25–35GB</td><td>Needs 2×72GB minimum; 3×/4×72GB or 4×48GB preferred.</td></tr>
+      <tr><td>70B</td><td>~280GB</td><td>~140GB</td><td>~70GB</td><td>~35–45GB</td><td>Needs 192GB+ aggregate VRAM for FP16/BF16 with useful headroom.</td></tr>
+    </tbody>
+  </table>
+  <div class="code">Rule of thumb:
+weight memory = parameters × bytes per parameter
+FP32 = 4 bytes, FP16/BF16 = 2 bytes, INT8 ≈ 1 byte, INT4 ≈ 0.5 byte + metadata
+
+Inference memory ≈ weights + KV cache + runtime buffers
+Training memory ≈ weights + gradients + optimizer states + activations + temp buffers + framework overhead</div>
+</section>
+
+<section id="methods">
+  <h2>2. Fine-tuning, LoRA, quantization and batching</h2>
+  <p>Fine-tuning feasibility depends on what is being trained. LoRA/QLoRA trains a small adapter and can fit on surprisingly small GPUs. Full fine-tuning updates every model weight, so memory rises from “weights only” to weights plus gradients, optimizer state, activations and runtime overhead. That is why “train a 7B model without mixed precision” is a materially harder requirement than “fine-tune a 7B model.”</p>
+  <table>
+    <thead><tr><th>Technique</th><th>What it solves</th><th>Memory impact</th><th>When to use</th></tr></thead>
+    <tbody>
+      <tr><td>RAG / prompting</td><td>Grounding on internal documents without changing model weights.</td><td>Inference memory only; extra vector DB/embedding cost.</td><td>Default for org knowledge assistants.</td></tr>
+      <tr><td>LoRA / PEFT</td><td>Adapts style, domain behavior, task format, instruction following.</td><td>Much lower than full fine-tuning; trains small adapter weights.</td><td>Default tuning path for 7B–70B where quality need is real.</td></tr>
+      <tr><td>QLoRA</td><td>Fine-tunes large models on smaller VRAM by quantizing the frozen base model.</td><td>Very memory efficient; slower and more tuning-sensitive.</td><td>Useful on 24GB/48GB GPUs or for large models.</td></tr>
+      <tr><td>Full fine-tuning BF16/FP16</td><td>Changes all weights; maximum control.</td><td>High; needs FSDP/DeepSpeed ZeRO for 7B+.</td><td>Use only when LoRA fails or task needs deep adaptation.</td></tr>
+      <tr><td>Full fine-tuning FP32</td><td>Rarely needed; mostly a hard requirement from legacy assumptions.</td><td>Very high; 7B practical target is ~150–200GB+ aggregate VRAM.</td><td>Avoid unless explicitly mandated; BF16 is the modern path.</td></tr>
+      <tr><td>Quantization for inference</td><td>Runs larger models or more users with less memory.</td><td>Large reduction in weights; KV cache still matters.</td><td>Use for cost-efficient serving; keep FP16/BF16 for quality-sensitive baselines.</td></tr>
+      <tr><td>Continuous batching / PagedAttention</td><td>Higher serving throughput and better KV-cache utilization.</td><td>Improves concurrency but needs serving engine support.</td><td>Use vLLM/TensorRT-LLM/TGI rather than naive scripts.</td></tr>
+    </tbody>
+  </table>
+  <h3>2.1 7B full fine-tuning memory breakup</h3>
+  <table>
+    <thead><tr><th>Component</th><th>FP32 full training for 7B</th><th>BF16/FP16 full training for 7B</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr><td>Model weights</td><td>~28GB</td><td>~14GB visible weights, often plus FP32 master weights depending optimizer path</td><td>Weights alone are not the training memory requirement.</td></tr>
+      <tr><td>Gradients</td><td>~28GB</td><td>~14GB to ~28GB depending precision and framework choices</td><td>Full fine-tuning stores gradients for trainable parameters.</td></tr>
+      <tr><td>Adam optimizer states</td><td>~56GB for first and second moments</td><td>Usually still large because optimizer states are commonly FP32</td><td>Adam roughly doubles FP32 parameter memory through momentum/variance states.</td></tr>
+      <tr><td>Subtotal before activations</td><td>~112GB</td><td>Often ~70GB–110GB depending optimizer/master-weight strategy</td><td>This is before sequence length, batch size and framework overhead.</td></tr>
+      <tr><td>Activations, temp buffers, CUDA/framework overhead</td><td>Often +30GB–80GB+ depending batch, sequence length and checkpointing</td><td>Often +20GB–60GB+ depending batch, sequence length and checkpointing</td><td>This is the part that makes single-GPU estimates fail in practice.</td></tr>
+      <tr><td>Practical planning target</td><td><b>~150GB–200GB+ aggregate VRAM</b> with FSDP/DeepSpeed ZeRO; impractical unsharded on one GPU</td><td><b>~100GB–160GB+ aggregate VRAM</b> for comfortable full fine-tuning</td><td>4×48GB or 3×/4×72GB are sensible; 4×24GB is experimental/tight for full FT.</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Procurement implication:</b> if “without mixed precision” means true FP32 full training, do not size the system from the 28GB weight number. Use 150GB–200GB+ aggregate VRAM as the planning floor, and require a pre-purchase POC command using the exact model, sequence length, batch target and optimizer.</div>
+</section>
+
+<section id="hardware-ranked">
+  <h2>3. Sorted hardware recommendation table</h2>
+  <p class="muted">Sorted by practical fit for a ₹50L org-owned CUDA-first platform for LLM serving, fine-tuning and small-to-mid DL training. “Fit” includes memory, software maturity, procurement risk, power/cooling, supportability and how likely the setup is to work as an org shared server.</p>
+  <table>
+    <thead><tr><th>Rank</th><th>Option</th><th>Total accelerator memory</th><th>Budget fit</th><th>Best use</th><th>Main pros</th><th>Main cons / risks</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><b>4× RTX PRO 5000 Blackwell 72GB</b></td><td>288GB GDDR7 ECC</td><td class="good">Strong if quoted ₹38L–₹50L all-in</td><td>Best all-round under ₹50L: 50B/70B serving, LoRA/QLoRA, 7B full FT, 14B tuning, DL training.</td><td>72GB/card changes memory math; CUDA; 300W/card; enough aggregate VRAM for the stated 7B FP32 full-training requirement with sharding.</td><td>Newer SKU; supply, India pricing, warranty and 4-GPU chassis validation must be verified.</td></tr>
+      <tr><td>2</td><td><b>3× RTX PRO 5000 Blackwell 72GB</b></td><td>216GB GDDR7 ECC</td><td class="good">Likely strong if quote is favorable</td><td>50B serving, 70B light serving, 7B FP32 full FT with careful sharding, LoRA/RAG.</td><td>Excellent memory per rupee if pricing is real; lower power and cost than 4 GPUs.</td><td>3-GPU tensor-parallel layouts, airflow and upgrade path need validation.</td></tr>
+      <tr><td>3</td><td><b>4× RTX 6000 Ada 48GB</b></td><td>192GB GDDR6 ECC</td><td class="good">Good if cards ₹6L–₹8L each</td><td>Safest mature CUDA workstation for 50B FP16, 7B full FT, 14B tuning and org serving.</td><td>Known procurement path, ECC, 300W/card, stable CUDA stack.</td><td>Less headroom than 72GB/96GB cards; no NVLink; 70B serving is feasible but tighter.</td></tr>
+      <tr><td>4</td><td><b>4× L40S 48GB</b></td><td>192GB GDDR6 ECC</td><td class="ok">Usually stretches beyond ₹50L</td><td>Server-oriented 50B/70B inference and training if budget permits.</td><td>Data-center card, strong inference, CUDA ecosystem.</td><td>Passive cooling only; must be bought inside a validated server. Card cost often pushes the system above ₹50L.</td></tr>
+      <tr><td>5</td><td><b>2× RTX PRO 6000 Blackwell 96GB</b></td><td>192GB GDDR7 ECC</td><td class="ok">Possible only if pricing is favorable</td><td>Clean 2-GPU 50B/70B serving; good large-memory jobs with simpler tensor parallelism.</td><td>96GB/card, fewer GPUs, high bandwidth, CUDA.</td><td>600W standard card or lower-power Max-Q tradeoff; likely expensive and availability-risky.</td></tr>
+      <tr><td>6</td><td><b>4× RTX PRO 6000 Blackwell 96GB</b></td><td>384GB GDDR7 ECC</td><td class="bad">Likely above ₹50L</td><td>Premium workstation/server; large model serving and training.</td><td>Huge VRAM, CUDA, excellent headroom.</td><td>Budget, power and chassis constraints.</td></tr>
+      <tr><td>7</td><td><b>8× RTX 4090 24GB</b></td><td>192GB GDDR6X, non-ECC</td><td class="ok">Can fit but messy</td><td>Maximum consumer compute per rupee; 50B FP16 possible with operational compromises.</td><td>Very high raw compute and low GPU cost.</td><td>8-GPU power/cooling/support complexity, no ECC, no NVLink, consumer-card warranty risk.</td></tr>
+      <tr><td>8</td><td><b>4× RTX 4090 24GB</b></td><td>96GB GDDR6X, non-ECC</td><td class="good">Very cost-effective</td><td>7B/14B/32B serving and LoRA, small DL training.</td><td>Excellent value and speed.</td><td>Not enough for clean 50B FP16; non-ECC; consumer support.</td></tr>
+      <tr><td>9</td><td><b>8× AMD Radeon PRO W7900 48GB</b></td><td>384GB GDDR6 ECC-class workstation memory</td><td class="ok">Attractive memory, high integration risk</td><td>Experimental ROCm lab with large memory needs.</td><td>Very low cost per GB versus NVIDIA pro GPUs.</td><td>ROCm/vLLM/library compatibility, multi-GPU topology and operations risk; not a default org production choice.</td></tr>
+      <tr><td>10</td><td><b>4× AMD Radeon PRO W7900 48GB</b></td><td>192GB GDDR6</td><td class="good">Cheap memory option</td><td>Dev/lab, model experimentation, some inference.</td><td>Cost-effective 48GB/card.</td><td>Not a default production choice for LLM serving/fine-tuning.</td></tr>
+      <tr><td>11</td><td><b>AMD Instinct MI300X</b></td><td>192GB HBM3 per accelerator</td><td class="bad">Usually outside ₹50L as supported server</td><td>Enterprise AI/HPC, very large model inference/training.</td><td>Outstanding memory capacity/bandwidth.</td><td>Typically OEM/8-GPU server procurement; not simple workstation purchase.</td></tr>
+      <tr><td>12</td><td><b>Intel Gaudi 3</b></td><td>128GB HBM per accelerator</td><td class="ok">Depends on OEM quote/cloud deal</td><td>Enterprise training/inference with Ethernet scale-out.</td><td>Strong memory/networking concept; non-CUDA competition.</td><td>Needs Habana/Optimum/vLLM-Gaudi maturity check and benchmark POC.</td></tr>
+      <tr><td>13</td><td><b>Mac Studio M3 Ultra 256GB</b></td><td>256GB unified memory</td><td class="ok">Fits as dev box, not main infra</td><td>Local quantized LLMs, Apple MLX, prototyping and developer workflows.</td><td>Unified memory, low power, excellent desktop UX.</td><td>No CUDA; not ideal for high-concurrency serving, vLLM/TensorRT, or shared fine-tuning infrastructure.</td></tr>
+      <tr><td>14</td><td><b>DGX Spark</b></td><td>128GB unified memory</td><td class="ok">Quote/retail dependent</td><td>Personal AI dev box, prototyping, quantized models and small experiments.</td><td>NVIDIA appliance workflow, unified memory.</td><td>Not a multi-user 50B/70B FP16 serving server; lower throughput and less expansion than multi-GPU.</td></tr>
+      <tr><td>15</td><td><b>DGX Station / DGX B200</b></td><td>Very large</td><td class="bad">Outside ₹50L</td><td>Enterprise AI platform.</td><td>Best-in-class appliance.</td><td>Budget mismatch.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="cost-ranked">
+  <h2>4. Sorted costed options</h2>
+  <p class="muted">Indicative India all-in budget includes GPUs/accelerators plus workstation/server chassis, CPU, motherboard, 256–512GB system RAM, 4–8TB NVMe, PSU, cooling, networking, warranty/support and basic deployment readiness. Numbers are planning ranges only; procurement should use written quotes.</p>
+  <table>
+    <thead><tr><th>Sorted fit</th><th>Configuration</th><th>Accelerator memory</th><th>Indicative accelerator cost</th><th>Other hardware/setup</th><th>Indicative all-in</th><th>Budget verdict</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>4× RTX PRO 5000 Blackwell 72GB</td><td>288GB</td><td>₹25L–₹32L</td><td>4-GPU workstation/server ₹12L–₹18L</td><td><b>₹38L–₹50L</b></td><td class="good">Best candidate if quote is real</td></tr>
+      <tr><td>2</td><td>3× RTX PRO 5000 Blackwell 72GB</td><td>216GB</td><td>₹19L–₹24L</td><td>3-GPU server/workstation ₹11L–₹16L</td><td><b>₹30L–₹42L</b></td><td class="good">Very strong</td></tr>
+      <tr><td>3</td><td>4× RTX 6000 Ada 48GB</td><td>192GB</td><td>₹25L–₹36L</td><td>4-GPU chassis ₹11L–₹16L</td><td><b>₹38L–₹52L</b></td><td class="good">Safe fallback</td></tr>
+      <tr><td>4</td><td>4× L40S 48GB</td><td>192GB</td><td>₹45L–₹60L</td><td>Validated passive-GPU server ₹10L–₹20L</td><td><b>₹55L–₹80L</b></td><td class="ok">Stretch / often above budget; only as server quote</td></tr>
+      <tr><td>5</td><td>2× RTX PRO 6000 Blackwell 96GB</td><td>192GB</td><td>₹20L–₹35L+</td><td>High-power workstation/server ₹12L–₹18L</td><td><b>₹35L–₹55L+</b></td><td class="ok">Depends heavily on quote</td></tr>
+      <tr><td>6</td><td>4× RTX 4090 24GB</td><td>96GB</td><td>₹8L–₹14L</td><td>Consumer/prosumer 4-GPU build ₹8L–₹14L</td><td><b>₹16L–₹28L</b></td><td class="good">Cheap but not 50B FP16-ready</td></tr>
+      <tr><td>7</td><td>8× RTX 4090 24GB</td><td>192GB</td><td>₹16L–₹28L</td><td>Special 8-GPU chassis, PSUs, cooling ₹18L–₹28L</td><td><b>₹35L–₹58L</b></td><td class="ok">Power/cooling risk</td></tr>
+      <tr><td>8</td><td>4× AMD Radeon PRO W7900 48GB</td><td>192GB</td><td>₹13L–₹18L</td><td>ROCm workstation ₹9L–₹15L</td><td><b>₹22L–₹35L</b></td><td class="ok">POC-first</td></tr>
+      <tr><td>9</td><td>8× AMD Radeon PRO W7900 48GB</td><td>384GB</td><td>₹26L–₹36L</td><td>Complex 8-GPU ROCm build ₹18L–₹30L</td><td><b>₹45L–₹66L</b></td><td class="ok">Attractive memory, high risk</td></tr>
+      <tr><td>10</td><td>Mac Studio M3 Ultra 256GB</td><td>256GB unified</td><td>N/A</td><td>Integrated appliance</td><td><b>₹8L–₹15L+</b></td><td class="ok">Developer/prototype appliance only</td></tr>
+      <tr><td>11</td><td>DGX Spark</td><td>128GB unified</td><td>N/A</td><td>Integrated appliance</td><td><b>Quote/retail dependent</b></td><td class="ok">Personal AI appliance only</td></tr>
+      <tr><td>12</td><td>MI300X / Gaudi 3 OEM server</td><td>128–192GB per accelerator</td><td>OEM quote</td><td>Enterprise server</td><td><b>Usually >₹50L</b></td><td class="bad">Only via formal POC/quote</td></tr>
+    </tbody>
+  </table>
+  <h3>4.1 Quote checklist</h3>
+  <table>
+    <thead><tr><th>Quote item</th><th>Why it matters</th><th>Minimum ask</th></tr></thead>
+    <tbody>
+      <tr><td>GPU SKUs and warranty</td><td>New Blackwell pro cards may have supply and warranty variance by vendor.</td><td>Exact part number, memory size, warranty duration, replacement process and lead time.</td></tr>
+      <tr><td>Validated chassis</td><td>4-GPU power, thermals and PCIe spacing are the difference between a server and a fragile build.</td><td>Vendor-supported 3×/4× GPU configuration with documented power and cooling envelope.</td></tr>
+      <tr><td>Power and UPS</td><td>4×300W GPUs plus CPU, drives and fans can exceed normal office desktop assumptions.</td><td>Power draw estimate, PSU redundancy if server-grade, UPS recommendation and plug/socket requirements.</td></tr>
+      <tr><td>System RAM and storage</td><td>Training datasets, checkpoints and preprocessing need host memory and fast local storage.</td><td>256GB RAM minimum; prefer 512GB if budget allows. 4TB NVMe minimum; prefer 8TB plus NAS/backup path.</td></tr>
+      <tr><td>Deployment support</td><td>The org needs a working platform, not just delivered parts.</td><td>Driver/CUDA validation, burn-in, remote management, OS install, Docker/NVIDIA Container Toolkit, and one vLLM benchmark run.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="serving-ranked">
+  <h2>5. Sorted LLM serving capacity</h2>
+  <p>These are planning bands, not guaranteed SLA numbers. Assumptions: vLLM/TensorRT-LLM-like engine where supported, FP16/BF16 unless stated, moderate 2K–8K context, streaming target around 8–15 generated tokens/sec/user, and healthy continuous batching. “Active users” means simultaneous users receiving tokens; registered or daily users can be much higher. Final capacity must be benchmarked with the selected model, context length and prompt/output mix.</p>
+  <div class="note"><b>Band meaning:</b> Very high = suitable for a large internal 7B/14B service; High = strong internal service; Medium = useful shared service with batching limits; Light = small team / specialist large-model service. These bands intentionally avoid fake precision.</div>
+  <table>
+    <thead><tr><th>Rank for serving</th><th>Setup</th><th>Memory</th><th>7B/8B active users</th><th>14B active users</th><th>32B active users</th><th>50B FP16/BF16 active users</th><th>70B FP16/BF16 active users</th><th>Serving verdict</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>4× RTX PRO 5000 72GB</td><td>288GB</td><td>High</td><td>High</td><td>Medium-high</td><td>Medium</td><td>Medium-light</td><td class="good">Best ₹50L-class headroom; can run one large service or split smaller services. Benchmark before promising exact concurrency.</td></tr>
+      <tr><td>2</td><td>3× RTX PRO 5000 72GB</td><td>216GB</td><td>High</td><td>Medium-high</td><td>Medium</td><td>Medium-light</td><td>Light</td><td class="good">Very good 50B option; 70B possible with reduced concurrency/context.</td></tr>
+      <tr><td>3</td><td>2× RTX PRO 6000 96GB</td><td>192GB</td><td>Medium-high</td><td>Medium-high</td><td>Medium</td><td>Medium-light</td><td>Light</td><td class="good">Clean TP=2 large-model serving if quote is within budget.</td></tr>
+      <tr><td>4</td><td>4× RTX 6000 Ada 48GB</td><td>192GB</td><td>High</td><td>Medium-high</td><td>Medium</td><td>Medium-light</td><td>Light</td><td class="good">Safe, mature 50B serving setup; 70B needs careful context and batching limits.</td></tr>
+      <tr><td>5</td><td>4× L40S 48GB</td><td>192GB</td><td>High</td><td>Medium-high</td><td>Medium</td><td>Medium-light</td><td>Light</td><td class="good">Strong data-center CUDA option if budget allows and server chassis is validated.</td></tr>
+      <tr><td>6</td><td>8× RTX 4090 24GB</td><td>192GB</td><td>Very high</td><td>High</td><td>Medium-high</td><td>Medium</td><td>Light-medium</td><td class="ok">Fast but operationally messy; best for lab, not clean org production.</td></tr>
+      <tr><td>7</td><td>8× AMD W7900 48GB</td><td>384GB</td><td>Estimate only</td><td>Estimate only</td><td>Estimate only</td><td>Possible</td><td>Possible</td><td class="ok">Memory-rich; actual capacity must be benchmarked under ROCm/vLLM.</td></tr>
+      <tr><td>8</td><td>4× AMD W7900 48GB</td><td>192GB</td><td>Estimate only</td><td>Estimate only</td><td>Estimate only</td><td>Possible</td><td>Possible but tight</td><td class="ok">Do POC before committing.</td></tr>
+      <tr><td>9</td><td>MI300X single/cluster</td><td>192GB per GPU</td><td>High</td><td>High</td><td>High</td><td>Strong</td><td>Strong</td><td class="ok">Technically excellent but procurement likely outside ₹50L.</td></tr>
+      <tr><td>10</td><td>Intel Gaudi 3</td><td>128GB per accelerator</td><td>High if stack tuned</td><td>High if stack tuned</td><td>Good</td><td>Good multi-accelerator</td><td>Possible multi-accelerator</td><td class="ok">Needs Gaudi-specific POC and vendor support.</td></tr>
+      <tr><td>11</td><td>4× RTX 4090 24GB</td><td>96GB</td><td>300–700</td><td>150–350</td><td>40–120</td><td class="bad">Not clean FP16</td><td class="bad">No</td><td class="ok">Excellent for 7B/14B/32B; not for 50B unquantized.</td></tr>
+      <tr><td>12</td><td>Mac Studio 256GB</td><td>256GB unified</td><td>Good local</td><td>Good local</td><td>Good quantized</td><td>Possible quantized</td><td>Possible quantized</td><td class="ok">Good single-user/local appliance, not a high-concurrency vLLM CUDA server.</td></tr>
+      <tr><td>13</td><td>DGX Spark 128GB</td><td>128GB unified</td><td>Good local</td><td>Good local</td><td>Good quantized</td><td>Possible quantized/light</td><td>Not clean FP16</td><td class="ok">Personal AI appliance, not the main org serving server.</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Context-length warning:</b> 32K–200K context can cut concurrency sharply because KV cache grows with active tokens. A service that feels comfortable at 2K–4K context may support only a handful of users at 128K/200K, even if the model advertises that context length. Treat any user-count table as a benchmark hypothesis, not a promise.</div>
+  <h3>5.1 vLLM inference memory breakup</h3>
+  <p>vLLM serving capacity is mostly a memory-budgeting problem after the model loads. A practical vLLM deployment reserves a fraction of GPU memory for the engine, model weights, runtime overhead and KV cache. The KV cache is what lets vLLM batch many active requests, but it is also what long context and high concurrency consume first.</p>
+  <div class="code">vLLM serving memory, simplified:
+usable GPU memory target ≈ total VRAM × gpu_memory_utilization
+total serving memory ≈ model weights + runtime overhead + KV cache + safety headroom
+
+model weights ≈ parameters × bytes per weight
+per-GPU weights with tensor parallelism ≈ total weights ÷ tensor_parallel_size
+
+KV cache grows with active tokens:
+KV memory ≈ active tokens × layers × KV heads × head dimension × 2 × bytes
+where active tokens = sum(prompt tokens + generated tokens still in cache) across active requests</div>
+  <table>
+    <thead><tr><th>Memory component</th><th>What it includes</th><th>How it scales</th><th>Procurement implication</th></tr></thead>
+    <tbody>
+      <tr><td>Model weights</td><td>FP16/BF16 parameters loaded across one or more GPUs.</td><td>Linear with model size. 50B FP16 is ~100GB; 70B FP16 is ~140GB.</td><td>This is the hard floor. A 96GB system cannot cleanly serve 50B FP16; 192GB can, but with limited KV headroom.</td></tr>
+      <tr><td>KV cache</td><td>Keys and values for all active prompt and generation tokens.</td><td>Linear with active tokens, layers and KV heads. Long-context workloads consume memory fast.</td><td>This determines concurrency. The same 50B model may support many short chats or only a few long-document sessions.</td></tr>
+      <tr><td>Runtime overhead</td><td>CUDA context, PyTorch/vLLM allocations, NCCL, scheduler metadata, CUDA graph/activation peaks and fragmentation.</td><td>Depends on engine settings, model architecture, batch behavior and CUDA graph capture.</td><td>Keep explicit headroom; do not plan to use 100% of VRAM for weights plus KV cache.</td></tr>
+      <tr><td>Safety headroom</td><td>Reserved margin for workload variance, driver behavior, model-specific buffers and operational stability.</td><td>Usually a percentage of VRAM or a fixed per-GPU margin.</td><td>For production, size for stable service, not for a one-time “model loaded” screenshot.</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Example serving setup</th><th>Physical VRAM</th><th>Approx usable target at 90%</th><th>Model weights</th><th>Planning overhead</th><th>Approx KV/headroom left</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td>50B FP16 on 4× RTX PRO 5000 72GB</td><td>288GB</td><td>~259GB</td><td>~100GB total, ~25GB/GPU with TP=4</td><td>~20GB–35GB total</td><td>~120GB–140GB</td><td class="good">Comfortable 50B serving. Good room for batching, moderate context and internal concurrency.</td></tr>
+      <tr><td>70B FP16 on 4× RTX PRO 5000 72GB</td><td>288GB</td><td>~259GB</td><td>~140GB total, ~35GB/GPU with TP=4</td><td>~25GB–40GB total</td><td>~75GB–95GB</td><td class="good">Workable 70B serving with real headroom, but long context and heavy concurrency still need benchmarking.</td></tr>
+      <tr><td>50B FP16 on 4× RTX 6000 Ada / L40S 48GB</td><td>192GB</td><td>~173GB</td><td>~100GB total, ~25GB/GPU with TP=4</td><td>~20GB–30GB total</td><td>~40GB–55GB</td><td class="ok">Good 50B serving, but concurrency/context budget is much tighter than 4×72GB.</td></tr>
+      <tr><td>70B FP16 on 4× RTX 6000 Ada / L40S 48GB</td><td>192GB</td><td>~173GB</td><td>~140GB total, ~35GB/GPU with TP=4</td><td>~20GB–30GB total</td><td>~0GB–15GB practical margin</td><td class="bad">Technically possible in some configurations, but too tight for a comfortable production promise without quantization or strict context limits.</td></tr>
+      <tr><td>50B FP16 on 3× RTX PRO 5000 72GB</td><td>216GB</td><td>~194GB</td><td>~100GB total, ~33GB/GPU with TP=3</td><td>~20GB–35GB total</td><td>~60GB–75GB</td><td class="ok">Solid 50B option. Validate TP=3 performance and framework/model compatibility before purchase.</td></tr>
+      <tr><td>32B FP16 on 4× RTX 4090 24GB</td><td>96GB</td><td>~86GB</td><td>~64GB total, ~16GB/GPU with TP=4</td><td>~10GB–18GB total</td><td>~5GB–15GB</td><td class="ok">Usable for smaller models, but short on headroom. Better with quantization or lower context.</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>How to read this:</b> vLLM will report actual GPU memory profiling during startup, and production settings should explicitly set tensor parallel size, max model length, max batched tokens and GPU memory utilization. The table above is for purchase planning; the final number must come from a benchmark using the exact model and workload.</div>
+  <h3>5.2 Long-context KV cache impact per user</h3>
+  <p>Modern LLMs may advertise 128K or 200K context windows, but the full window is not free. Each active user's KV cache grows with the actual prompt tokens plus generated tokens still resident in cache. If a user sends a 20K-token document, the server pays for roughly 20K tokens of KV cache. If a user fills a 200K context window, one request can consume tens of GB of VRAM on modern GQA models.</p>
+  <table>
+    <thead><tr><th>35B FP16/BF16 serving assumption</th><th>Planning value</th><th>Comment</th></tr></thead>
+    <tbody>
+      <tr><td>Model weights</td><td>~70GB</td><td>35B × 2 bytes per parameter.</td></tr>
+      <tr><td>Runtime / activations / buffers</td><td>~10GB planning minimum</td><td>Can be higher depending model, vLLM settings, CUDA graph capture and fragmentation.</td></tr>
+      <tr><td>Base before KV cache</td><td>~80GB</td><td>This is before any meaningful user context is served.</td></tr>
+      <tr><td>Modern GQA/MQA KV cache</td><td>~0.25–0.40MB per token</td><td>Representative for newer long-context models with grouped-query or multi-query attention.</td></tr>
+      <tr><td>Older full-attention KV cache</td><td>~1.5MB per token</td><td>Representative of older LLaMA-30B/33B-style full multi-head attention; much worse for long context.</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>Context used by one active user</th><th>Modern GQA KV/user</th><th>Total memory for one 35B user</th><th>Older full-attention KV/user</th><th>Total memory for one older-style 35B user</th></tr></thead>
+    <tbody>
+      <tr><td>32K tokens</td><td>~8GB–13GB</td><td>~88GB–93GB</td><td>~48GB</td><td>~128GB</td></tr>
+      <tr><td>64K tokens</td><td>~16GB–26GB</td><td>~96GB–106GB</td><td>~96GB</td><td>~176GB</td></tr>
+      <tr><td>128K tokens</td><td>~32GB–51GB</td><td>~112GB–131GB</td><td>~192GB</td><td>~272GB</td></tr>
+      <tr><td>200K tokens</td><td>~50GB–80GB</td><td>~130GB–160GB</td><td>~300GB</td><td>~380GB</td></tr>
+    </tbody>
+  </table>
+  <table>
+    <thead><tr><th>System for 35B FP16/BF16</th><th>Approx KV budget after 70GB weights + 10GB overhead</th><th>32K modern GQA users</th><th>64K modern GQA users</th><th>128K modern GQA users</th><th>200K modern GQA users</th><th>Procurement reading</th></tr></thead>
+    <tbody>
+      <tr><td>4× RTX 6000 Ada / L40S 48GB</td><td>~90GB usable KV budget</td><td>~6–10 memory-fit users</td><td>~3–5</td><td>~1–2</td><td>~1</td><td class="ok">Good 35B server, but long-context concurrency becomes small fast.</td></tr>
+      <tr><td>3× RTX PRO 5000 72GB</td><td>~110GB usable KV budget</td><td>~8–13 memory-fit users</td><td>~4–6</td><td>~2–3</td><td>~1–2</td><td class="good">Better long-context headroom; validate TP=3 and throughput.</td></tr>
+      <tr><td>4× RTX PRO 5000 72GB</td><td>~175GB usable KV budget</td><td>~13–21 memory-fit users</td><td>~6–10</td><td>~3–5</td><td>~2–3</td><td class="good">Best ₹50L-class option for 35B long-context serving.</td></tr>
+      <tr><td>4× RTX 4090 24GB</td><td>~5GB–10GB usable KV budget after overhead</td><td>Usually 0–1</td><td>Not practical</td><td>Not practical</td><td>Not practical</td><td class="bad">Can run smaller contexts or quantized variants, not clean 35B long-context FP16 service.</td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><b>Multi-user reality:</b> these are memory-fit estimates only. Real users also compete for prefill compute, decode throughput, network latency and scheduler limits. For long-document use cases, procurement should define a target such as “N simultaneous 35B users at 64K context and 8 tokens/sec/user,” then require a vLLM benchmark with <code>max_model_len</code>, <code>max_num_batched_tokens</code>, <code>tensor_parallel_size</code> and <code>gpu_memory_utilization</code> fixed in the test.</div>
+</section>
+
+<section id="training-ranked">
+  <h2>6. Sorted fine-tuning and DL training feasibility</h2>
+  <table>
+    <thead><tr><th>Rank for training</th><th>Setup</th><th>LoRA/QLoRA 7B–14B</th><th>Full FT 7B BF16</th><th>Full FT 7B FP32</th><th>LoRA 30B–70B</th><th>Other DL training</th><th>Training verdict</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>4× RTX PRO 5000 72GB</td><td class="good">Excellent</td><td class="good">Yes</td><td class="good">Possible with ZeRO/FSDP</td><td class="good">Very good</td><td class="good">Excellent</td><td>Best balanced CUDA training/fine-tuning candidate under ₹50L if priced correctly.</td></tr>
+      <tr><td>2</td><td>3× RTX PRO 5000 72GB</td><td class="good">Excellent</td><td class="good">Yes</td><td class="ok">Possible with ZeRO/FSDP; validate exact recipe</td><td class="good">Good</td><td class="good">Very good</td><td>Strong memory headroom; validate multi-GPU training topology.</td></tr>
+      <tr><td>3</td><td>4× RTX 6000 Ada 48GB</td><td class="good">Excellent</td><td class="good">Yes</td><td class="ok">Possible but tight/slow</td><td class="good">Good</td><td class="good">Very good</td><td>Known safe CUDA path for org training.</td></tr>
+      <tr><td>4</td><td>4× L40S 48GB</td><td class="good">Excellent</td><td class="good">Yes</td><td class="ok">Possible but tight/slow</td><td class="good">Good</td><td class="good">Very good</td><td>Excellent if budget supports server-grade deployment.</td></tr>
+      <tr><td>5</td><td>2× RTX PRO 6000 96GB</td><td class="good">Excellent</td><td class="good">Yes</td><td class="ok">Possible</td><td class="good">Good</td><td class="good">Very good</td><td>Clean for large-memory jobs; less parallelism than 4 GPUs.</td></tr>
+      <tr><td>6</td><td>8× RTX 4090</td><td class="good">Excellent</td><td class="good">Yes</td><td class="ok">Possible but operationally messy</td><td class="good">Good</td><td class="good">Excellent raw compute</td><td>Fast lab rig; not the cleanest production training box.</td></tr>
+      <tr><td>7</td><td>4× RTX 4090</td><td class="good">Excellent</td><td class="ok">Possible with care</td><td class="bad">No / very impractical</td><td class="ok">QLoRA mostly</td><td class="good">Excellent raw compute</td><td>Great low-cost experiments; memory-limited.</td></tr>
+      <tr><td>8</td><td>MI300X</td><td class="good">Excellent</td><td class="good">Yes</td><td class="good">Possible</td><td class="good">Excellent</td><td class="good">Excellent</td><td>Technically strong; procurement/ROCm skill risk under ₹50L.</td></tr>
+      <tr><td>9</td><td>Intel Gaudi 3</td><td class="good">Good</td><td class="good">Good with Habana stack</td><td class="ok">Possible</td><td class="ok">POC first</td><td class="good">Good</td><td>Use only if vendor commits to stack and benchmark success criteria.</td></tr>
+      <tr><td>10</td><td>AMD Radeon PRO W7900 4×/8×</td><td class="ok">Possible</td><td class="ok">Possible</td><td class="ok">Possible but POC needed</td><td class="ok">Possible</td><td class="ok">Good if ROCm stack works</td><td>Memory-rich low-cost lab route; not default production path.</td></tr>
+      <tr><td>11</td><td>Mac Studio M3 Ultra</td><td class="ok">MLX LoRA possible</td><td class="bad">Not ideal</td><td class="bad">No</td><td class="ok">Small/local only</td><td class="ok">Good Apple ML/vision dev</td><td>Great developer box, not a shared CUDA fine-tuning server.</td></tr>
+      <tr><td>12</td><td>DGX Spark</td><td class="ok">Good for small experiments</td><td class="ok">Limited</td><td class="bad">No</td><td class="ok">Small/local experiments</td><td class="ok">Good prototyping</td><td>Personal AI box, not the main full-training server.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="software">
+  <h2>7. Software stack</h2>
+  <h3>7.1 Recommended default stack for NVIDIA options</h3>
+  <div class="code">Base OS:
+  Ubuntu Server LTS
+  NVIDIA Driver
+  Docker + NVIDIA Container Toolkit
+
+Inference:
+  vLLM first for OpenAI-compatible high-throughput serving
+  TensorRT-LLM later for stable high-volume models
+  Open WebUI for internal UI through a gateway
+
+Training:
+  PyTorch CUDA
+  Hugging Face Transformers
+  PEFT / LoRA / QLoRA
+  TRL for SFT/DPO-style training
+  Axolotl for config-driven fine-tuning
+  DeepSpeed ZeRO or PyTorch FSDP for multi-GPU full fine-tuning
+
+RAG / platform:
+  FastAPI gateway, Redis queue/cache
+  PostgreSQL + pgvector
+  MinIO/NAS for datasets and model artifacts
+  MLflow/W&B for experiment tracking
+  Prometheus + Grafana + DCGM exporter for monitoring</div>
+
+  <h3>7.2 Sorted software fit by hardware family</h3>
+  <table>
+    <thead><tr><th>Rank</th><th>Hardware family</th><th>Runtime</th><th>Best serving stack</th><th>Best training stack</th><th>llama.cpp / Ollama role</th><th>Recommendation</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>NVIDIA RTX PRO 5000/6000, RTX 6000 Ada, L40S</td><td>CUDA + NCCL</td><td>vLLM first; TensorRT-LLM for optimized stable models; TGI optional</td><td>PyTorch CUDA, Transformers, PEFT/TRL, Axolotl, DeepSpeed, FSDP</td><td>Dev demos and quantized GGUF; not main server</td><td class="good">Default lowest-risk org stack.</td></tr>
+      <tr><td>2</td><td>NVIDIA RTX 4090/3090</td><td>CUDA + NCCL</td><td>vLLM for 7B/14B/32B; avoid relying on 50B unless 8-GPU</td><td>Same CUDA stack; watch thermals/power</td><td>Good for demos</td><td class="ok">Good lab stack, weaker production support.</td></tr>
+      <tr><td>3</td><td>AMD Instinct MI300X</td><td>ROCm + RCCL</td><td>vLLM ROCm where validated; SGLang/TGI options as supported</td><td>PyTorch ROCm, Transformers, DeepSpeed/FSDP support validation</td><td>Secondary</td><td class="ok">Strong hardware; POC-first.</td></tr>
+      <tr><td>4</td><td>AMD Radeon PRO W7900</td><td>ROCm</td><td>vLLM ROCm only after compatibility testing</td><td>PyTorch ROCm; expect debugging</td><td>llama.cpp may be easier for some quantized local flows</td><td class="ok">Lab route, not default org production.</td></tr>
+      <tr><td>5</td><td>Intel Gaudi 3</td><td>SynapseAI / Habana / Optimum Habana</td><td>vLLM Gaudi plugin if supported; vendor reference stack</td><td>Optimum Habana + PyTorch integration</td><td>Not primary</td><td class="ok">Only with vendor POC and support.</td></tr>
+      <tr><td>6</td><td>Apple Mac Studio / DGX Spark</td><td>Metal / MLX or NVIDIA appliance stack</td><td>llama.cpp, Ollama, MLX server wrappers, local model APIs</td><td>Small LoRA/fine-tuning experiments for selected models</td><td>Main local path</td><td class="ok">Developer/prototype appliances, not the shared GPU server.</td></tr>
+    </tbody>
+  </table>
+
+  <h3>7.3 vLLM vs TensorRT-LLM vs llama.cpp vs Ollama</h3>
+  <table>
+    <thead><tr><th>Tool</th><th>Best for</th><th>Strengths</th><th>Limitations</th><th>Use in this proposal</th></tr></thead>
+    <tbody>
+      <tr><td>vLLM</td><td>Org serving on NVIDIA; also AMD/Gaudi where validated</td><td>Continuous batching, PagedAttention, OpenAI API, tensor parallelism</td><td>Needs server/GPU ops skill</td><td class="good">Default serving engine.</td></tr>
+      <tr><td>TensorRT-LLM</td><td>Stable high-throughput NVIDIA deployments</td><td>Excellent optimized inference path</td><td>More complex engine build/rebuild workflow</td><td>Phase 2 for stable high-volume models.</td></tr>
+      <tr><td>TGI</td><td>Hugging Face-native deployments</td><td>Mature model-serving ecosystem</td><td>Often less flexible than vLLM for experiments</td><td>Optional fallback.</td></tr>
+      <tr><td>llama.cpp</td><td>Quantized local/edge inference</td><td>GGUF, CPU/GPU hybrid, very portable</td><td>Not ideal for high-concurrency shared service</td><td>Developer/Mac/edge demos.</td></tr>
+      <tr><td>Ollama</td><td>Developer-friendly local LLMs</td><td>Very easy CLI/API and model management</td><td>Less control/performance than vLLM</td><td>Developer demos, not central service.</td></tr>
+      <tr><td>Open WebUI</td><td>Internal user interface</td><td>ChatGPT-like UI, works with OpenAI-compatible APIs</td><td>Should not bypass auth/routing gateway</td><td>UI over FastAPI gateway.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="decision">
+  <h2>8. Final decision matrix</h2>
+  <table>
+    <thead><tr><th>Org priority</th><th>Best sorted option</th><th>Why</th><th>What to validate before purchase</th></tr></thead>
+    <tbody>
+      <tr><td>Best all-round ₹50L infra</td><td><b>4× RTX PRO 5000 Blackwell 72GB</b></td><td>Most balanced memory/headroom/software-risk profile; best fit for 50B serving plus 7B full fine-tuning.</td><td>Real India pricing, warranty, chassis airflow, power, vendor support, and one benchmark job.</td></tr>
+      <tr><td>Lower-cost but still strong</td><td><b>3× RTX PRO 5000 Blackwell 72GB</b></td><td>216GB VRAM gives good 50B headroom at lower cost.</td><td>3-GPU topology, vLLM tensor parallel performance, ZeRO/FSDP training recipe, upgrade path to 4 GPUs.</td></tr>
+      <tr><td>Safest known CUDA workstation</td><td><b>4× RTX 6000 Ada 48GB</b></td><td>Known 48GB pro card procurement path with ECC and mature CUDA.</td><td>Whether all-in quote stays under ₹50L.</td></tr>
+      <tr><td>Data-center preference</td><td><b>4× L40S 48GB</b></td><td>Better server orientation.</td><td>Usually above budget; must be quoted as a validated passive-cooling server.</td></tr>
+      <tr><td>Maximum cheap compute</td><td><b>4×/8× RTX 4090</b></td><td>Best raw CUDA performance per rupee.</td><td>Consumer card support, thermals, 50B memory limits, downtime tolerance.</td></tr>
+      <tr><td>Non-CUDA strategy</td><td><b>MI300X or Gaudi 3 via OEM POC</b></td><td>Technically compelling but ecosystem risk.</td><td>Run your exact models: vLLM/TGI, LoRA, full FT, monitoring and failure recovery.</td></tr>
+      <tr><td>Developer appliance</td><td><b>Mac Studio / DGX Spark</b></td><td>Good local prototypes, demos and quantized models.</td><td>Do not position as the high-concurrency org serving or full-training server.</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>Recommended final wording for procurement:</b> “We recommend procuring a CUDA-based multi-GPU server, with first preference for 4× RTX PRO 5000 Blackwell 72GB if vendor quote, warranty and chassis validation are satisfactory. If the 4-GPU quote exceeds budget, evaluate 3× RTX PRO 5000 72GB. If RTX PRO 5000 supply/pricing is weak, procure a proven 4×48GB RTX 6000 Ada system, or an L40S server only if quoted as a complete validated passive-GPU server. The platform should run vLLM for serving, PEFT/TRL/Axolotl/DeepSpeed/FSDP for tuning, and a gateway/RAG/monitoring stack around it.”</div>
+</section>
+
+<section id="sources">
+  <h2>9. Sources and resource links</h2>
+  <p class="muted">Hardware specs and software capabilities are based on vendor/official docs where possible. Pricing is volatile and must be validated through written quotes.</p>
+  <ol class="src">
+    <li><a href="https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-5000/">NVIDIA RTX PRO 5000 Blackwell official specs</a></li>
+    <li><a href="https://www.pny.com/nvidia-rtx-pro-5000-72gb-blackwell">PNY RTX PRO 5000 72GB specs</a></li>
+    <li><a href="https://www.nvidia.com/en-us/products/workstations/professional-desktop-gpus/rtx-pro-6000-family/">NVIDIA RTX PRO 6000 Blackwell family</a></li>
+    <li><a href="https://www.nvidia.com/en-in/products/workstations/rtx-6000/">NVIDIA RTX 6000 Ada official specs</a></li>
+    <li><a href="https://www.nvidia.com/en-in/data-center/l40s/">NVIDIA L40S official specs</a></li>
+    <li><a href="https://www.nvidia.com/en-in/geforce/graphics-cards/40-series/rtx-4090/">NVIDIA RTX 4090 official specs</a></li>
+    <li><a href="https://www.amd.com/en/products/graphics/workstations/radeon-pro/w7900.html">AMD Radeon PRO W7900 official specs</a></li>
+    <li><a href="https://www.amd.com/en/products/accelerators/instinct/mi300/mi300x.html">AMD Instinct MI300X official specs</a></li>
+    <li><a href="https://cdrdv2-public.intel.com/817486/gaudi-3-ai-accelerator-white-paper.pdf">Intel Gaudi 3 white paper</a></li>
+    <li><a href="https://support.apple.com/en-in/122211">Apple Mac Studio technical specs</a></li>
+    <li><a href="https://www.nvidia.com/en-in/products/workstations/dgx-spark/">NVIDIA DGX Spark</a></li>
+    <li><a href="https://www.nvidia.com/en-in/products/workstations/dgx-station/">NVIDIA DGX Station</a></li>
+    <li><a href="https://www.nvidia.com/en-in/data-center/dgx-b200/">NVIDIA DGX B200</a></li>
+    <li><a href="https://huggingface.co/docs/transformers/v4.46.3/model_memory_anatomy">Hugging Face model memory anatomy</a></li>
+    <li><a href="https://huggingface.co/docs/peft/en/index">Hugging Face PEFT docs</a></li>
+    <li><a href="https://huggingface.co/docs/trl/index">Hugging Face TRL docs</a></li>
+    <li><a href="https://deepspeed.readthedocs.io/en/latest/zero3.html">DeepSpeed ZeRO docs</a></li>
+    <li><a href="https://docs.pytorch.org/docs/stable/fsdp.html">PyTorch FSDP docs</a></li>
+    <li><a href="https://docs.vllm.ai/">vLLM docs</a></li>
+    <li><a href="https://docs.vllm.ai/en/stable/getting_started/installation/gpu/">vLLM ROCm installation</a></li>
+    <li><a href="https://docs.vllm.ai/projects/gaudi/en/latest/">vLLM Gaudi docs</a></li>
+    <li><a href="https://docs.nvidia.com/tensorrt-llm/index.html">TensorRT-LLM docs</a></li>
+    <li><a href="https://github.com/ggml-org/llama.cpp">llama.cpp GitHub</a></li>
+    <li><a href="https://docs.ollama.com/">Ollama docs</a></li>
+    <li><a href="https://docs.openwebui.com/">Open WebUI docs</a></li>
+    <li><a href="https://mlflow.org/docs/latest/">MLflow docs</a></li>
+    <li><a href="https://prometheus.io/">Prometheus</a></li>
+    <li><a href="https://grafana.com/">Grafana</a></li>
+  </ol>
+</section>
+
+</main>
+<footer>Generated for internal planning. Validate quotes, GST, warranty, data-center/rack readiness, power, cooling, noise, AMC, and procurement constraints before purchase.</footer>
+</body>
+</html>
