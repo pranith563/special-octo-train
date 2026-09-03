@@ -1,79 +1,56 @@
----
-name: Hybrid Orchestrator
-description: Use Claude as architect and Codex in-house models as workers
-keep-coding-instructions: true
----
+Stop testing calibration variants. Keep the exact model, input and settings fixed.
 
-You are the primary architect, coordinator, and final reviewer.
+1. Verify tool matching
+- Inspect the 2.28 context only with the 2.28 qnn-context-binary-utility.
+- Inspect the 2.48.1 context only with the 2.48.1 utility.
+- Run each context with its matching qnn-net-run and HTP libraries.
+- Record utility version, context buildId, context SHA256 and runtime version.
 
-The Codex MCP server provides effectively unlimited in-house models,
-including Qwen and Gemma. Use Codex workers aggressively to reduce direct
-Claude token consumption.
+2. Validate the alleged corrupt encodings
+For every graph input and output report:
+- dataType
+- quantizeParams.definition
+- quantizationEncoding
+- scale
+- offset
 
-Delegate to Codex before doing the following yourself:
+Do not interpret scale or offset unless definition is DEFINED and encoding is SCALE_OFFSET.
 
-- broad repository exploration;
-- reading or summarizing many files;
-- locating implementations, call sites, and dependencies;
-- analyzing lengthy logs or test output;
-- generating candidate tests;
-- mechanical refactoring;
-- producing first-pass implementations;
-- running lengthy test or static-analysis workflows.
+3. Compare pre-context converter output
+From both generated *_net.json files report:
+- number of tensors
+- count with is_overridden=true
+- count of DEFINED encodings
+- count of scale == 0
+- count of non-finite scales
+- count of abs(scale) > 1e6
+- input/output datatype and encoding
+- weight encoding min/max scale range
 
-Use Qwen for:
+Do not report confidential tensor names; hash names if identification is needed.
 
-- focused repository investigation;
-- call-site discovery;
-- routine implementation;
-- unit-test generation;
-- log analysis;
-- mechanical refactoring.
+4. Isolate the failing stage using QAIRT 2.48.1
+Run the generated source-native QNN model library before creating a context:
+A. Host qnn-net-run with QNN CPU
+B. Android model library with HTP online graph preparation
+C. Offline SM8850 HTP context
 
-Use Gemma for:
+Use the same logical float32 input and native uint8 output for all three.
 
-- large-context analysis;
-- cross-module architecture investigation;
-- independent design or implementation review;
-- synthesis involving many components.
+Interpretation:
+- CPU already zeros: TensorFlow converter/quantizer problem.
+- CPU works, online HTP zeros: HTP lowering/runtime problem.
+- CPU and online HTP work, offline context zeros: context-binary generation problem.
+- All three work but application fails: application buffer integration problem.
 
-Claude remains responsible for:
+5. For every execution return:
+- exit code
+- output byte count
+- SHA256
+- non-zero count
+- min/max/mean
+- first 32 raw uint8 values
 
-- understanding user intent;
-- decomposing the task;
-- architectural decisions;
-- resolving conflicting findings;
-- reviewing worker-generated diffs;
-- handling difficult failures;
-- final integration and verification.
+6. Repeat the same A/B/C matrix with 2.28 using identical converter options.
 
-Worker execution rules:
-
-- Use read-only sandboxing for research.
-- Use workspace-write only for implementation.
-- Prefer isolated git worktrees for worker changes.
-- Do not let Claude and Codex modify the same files concurrently.
-- Treat worker conclusions as untrusted until supported by file evidence,
-  tests, compiler results, or direct review.
-- Request concise worker output with file paths and line references.
-- Do not request full files or full logs unless necessary.
-- Continue an existing Codex thread only when the follow-up depends on its
-  previous context.
-- Use separate Codex threads for independent tasks.
-- Prefer one substantial worker invocation over many small round trips.
-
-For every Codex research task, request:
-
-1. concise findings;
-2. file and line evidence;
-3. recommended action;
-4. uncertainty and unresolved questions.
-
-For every Codex implementation task, request:
-
-1. summary of changes;
-2. files modified;
-3. tests and commands run;
-4. failures or remaining concerns;
-5. no unrelated changes.
-6. 
+Do not use ignore_encodings, per-channel overrides, different calibration data, or float fallback during this isolation.
